@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FC Mobile Hub BD - LVL Rankings</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;background:#080d12;color:#f4f7fa;
+  font-family:Arial,sans-serif;padding:18px
+}
+header{
+  text-align:center;padding:24px 10px;
+  background:linear-gradient(135deg,#102c25,#111827);
+  border:1px solid #245c47;border-radius:16px
+}
+h1{font-size:25px;margin:0 0 8px;color:#5dffa5}
+header p{color:#c5d3ce;margin:0}
+h2{font-size:19px;margin:24px 0 12px}
+.search{
+  width:100%;padding:13px;border-radius:9px;
+  border:1px solid #34443f;background:#111a20;
+  color:white;font-size:16px;margin:12px 0
+}
+.table-wrap{overflow-x:auto;border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:13px 12px;text-align:center;
+  border-bottom:1px solid #24312e}
+th{background:#17382d;color:#7dffb5;font-size:12px}
+td{font-size:13px}
+td:nth-child(2){text-align:left;font-weight:bold}
+tr:nth-child(even){background:#10171c}
+.rank{color:#73ffae;font-weight:bold}
+.scores{color:#c6d6ce;white-space:nowrap}
+footer{text-align:center;color:#82918b;font-size:12px;margin:20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>FC MOBILE HUB BD</h1>
+  <p>LVL Rankings · Player Leaderboard</p>
+</header>
+
+<h2>🏆 Player Rankings</h2>
+<input class="search" id="search"
+  placeholder="Search player..."
+  oninput="render()">
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>RANK</th><th>PLAYER</th><th>GP</th>
+<th>AVG</th><th>MAX</th><th>MIN</th><th>LAST 5</th>
+</tr>
+</thead>
+<tbody id="players"></tbody>
+</table>
+</div>
+
+<footer>FC Mobile Hub BD · Community Rankings</footer>
+
+<script>
+// Add player names and their match scores here.
+// Put the newest match score LAST.
+// Example: scores: [8, 10, 12, 9, 11]
+
+const data = [
+  {name:"Player One", scores:[8,10,12,9,11]},
+  {name:"Player Two", scores:[7,9,8,11,10]},
+  {name:"Player Three", scores:[10,12,11,9,12]}
+];
+
+function render(){
+  const query=document.getElementById("search")
+    .value.toLowerCase();
+
+  const ranked=data.map(p=>{
+    const s=p.scores;
+    const avg=s.length
+      ? s.reduce((a,b)=>a+b,0)/s.length : 0;
+    return {
+      ...p,
+      gp:s.length,
+      avg,
+      max:s.length?Math.max(...s):0,
+      min:s.length?Math.min(...s):0
+    };
+  }).sort((a,b)=>b.avg-a.avg || b.max-a.max);
+
+  document.getElementById("players").innerHTML=
+    ranked.filter(p=>p.name.toLowerCase().includes(query))
+    .map((p,i)=>`
+      <tr>
+        <td class="rank">#${ranked.indexOf(p)+1}</td>
+        <td>${p.name}</td>
+        <td>${p.gp}</td>
+        <td>${p.avg.toFixed(2)}</td>
+        <td>${p.max}</td>
+        <td>${p.min}</td>
+        <td class="scores">${p.scores.slice(-5).join(" · ")}</td>
+      </tr>
+    `).join("");
+}
+render();
+</script>
+</body>
+</html>
